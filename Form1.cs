@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Windows.Forms;
 using Microsoft.Data.SqlClient;
@@ -7,8 +8,8 @@ namespace lab1_SGBD
 {
     public partial class parent : Form
     {
-        //SqlConnection cs = new SqlConnection("Data Source=DESKTOP-ILTATS6\\SQLEXPRESS;Initial Catalog=Port;Integrated Security=true;TrustServerCertificate=true;");
         private readonly string connectionString = @"Server=DESKTOP-ILTATS6\SQLEXPRESS;Database=Port;Integrated Security=true;TrustServerCertificate=true;";
+        //private readonly string connectionString = "Data Source=DESKTOP-ILTATS6\\SQLEXPRESS;Initial Catalog=Port;Integrated Security=True;TrustServerCertificate=true;";
         private DataSet ds = new DataSet();
         private SqlDataAdapter parentDataAdapter = new SqlDataAdapter();
         private SqlDataAdapter childDataAdapter = new SqlDataAdapter();
@@ -21,11 +22,11 @@ namespace lab1_SGBD
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender,  EventArgs e)
+        private void Form1_Load(object sender, EventArgs e)
         {
             try
             {
-                using(SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
                     //Managers - Employees (1 - m)
@@ -46,7 +47,8 @@ namespace lab1_SGBD
                     dataGridViewChild.DataSource = childBindingSource;
                 }
 
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
@@ -59,14 +61,73 @@ namespace lab1_SGBD
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    childDataAdapter.DeleteCommand = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn);
+                    using(SqlCommand deleteEmp = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn))
+                    {
+                        deleteEmp.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
+                        childDataAdapter.Fill(ds);
+                    }
+                    /*childDataAdapter.DeleteCommand = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn);
                     childDataAdapter.DeleteCommand.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
+                    conn.Open();
                     childDataAdapter.DeleteCommand.ExecuteNonQuery();
+                    childDataAdapter.Fill(ds);*/
+                    conn.Close();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    childDataAdapter.UpdateCommand = new SqlCommand("UPDATE Employees " + "SET EmployeeSalary=@salary, EmployeeBonus=@bonus, EmployeeName=@name" + " WHERE EmployeeID=@id;", conn);
+                    childDataAdapter.UpdateCommand.Parameters.Add("@salary", SqlDbType.Float).Value = Convert.ToDouble(textBox1.Text.ToString());
+                    childDataAdapter.UpdateCommand.Parameters.Add("@bonus", SqlDbType.Float).Value = Convert.ToDouble(textBox2.Text.ToString());
+                    childDataAdapter.UpdateCommand.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
+                    childDataAdapter.UpdateCommand.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
+                    int rows = childDataAdapter.UpdateCommand.ExecuteNonQuery();
+                    if (rows > 0)
+                    {
+                        MessageBox.Show("Updated!");
+                    }
                     childDataAdapter.Fill(ds);
                     conn.Close();
                 }
 
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    childDataAdapter.InsertCommand = new SqlCommand("INSERT INTO Employees(EmployeeSalary, EmployeeBonus, EmployeeAge, ManagerID, EmployeeName)" + " VALUES (@salary, @bonus, @age, @mID, @name);", conn);
+                    childDataAdapter.InsertCommand.Parameters.Add("@salary", SqlDbType.Float).Value = Convert.ToDouble(textBox1.Text.ToString());
+                    childDataAdapter.InsertCommand.Parameters.Add("@bonus", SqlDbType.Float).Value = Convert.ToDouble(textBox2.Text.ToString());
+                    childDataAdapter.InsertCommand.Parameters.Add("@age", SqlDbType.Int).Value = Convert.ToInt64(textBox3.Text.ToString());
+                    childDataAdapter.InsertCommand.Parameters.Add("@mID", SqlDbType.Int).Value = Convert.ToInt64(textBox4.Text.ToString());
+                    childDataAdapter.InsertCommand.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
+                    childDataAdapter.InsertCommand.ExecuteNonQuery();
+                    childDataAdapter.Fill(ds);
+                    conn.Close();
+                }
+            }
+            catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }

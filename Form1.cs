@@ -45,6 +45,7 @@ namespace lab1_SGBD
                     childBindingSource.DataSource = parentBindingSource;
                     childBindingSource.DataMember = "FK_Employees_Managers";
                     dataGridViewChild.DataSource = childBindingSource;
+                    conn.Close();
                 }
 
             }
@@ -60,30 +61,18 @@ namespace lab1_SGBD
             {
                 using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Port"].ConnectionString.ToString()))
                 {
-                    /*using(SqlCommand deleteEmp = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn))
-                    {
-                        deleteEmp.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
-                        childDataAdapter.Fill(ds);
-                    }
-                    deleteEmp.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
-                    childDataAdapter.Fill(ds);*/
-
                     childDataAdapter.DeleteCommand = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn);
                     childDataAdapter.DeleteCommand.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
+
                     conn.Open();
                     childDataAdapter.DeleteCommand.ExecuteNonQuery();
                     conn.Close();
-                    childDataAdapter.Fill(ds, "Employees");
 
-                    /*SqlCommand delEmp = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn);
-                    SqlDataAdapter daChild = new SqlDataAdapter(delEmp);
-                    delEmp.Parameters.Add("@id", SqlDbType.Int).Value = dataGridViewChild.CurrentRow.Cells[0].Value;
-                    DataSet ds1 = new DataSet();
                     conn.Open();
-                    delEmp.ExecuteNonQuery();
+                    childDataAdapter.SelectCommand = new SqlCommand("SELECT * FROM Employees", conn);
+                    ds.Tables["Employees"].Clear();
+                    childDataAdapter.Fill(ds, "Employees");
                     conn.Close();
-                    ds1.Clear();
-                    daChild.Fill(ds1, "Employees");*/
                 }
             }
             catch (Exception ex)
@@ -98,31 +87,24 @@ namespace lab1_SGBD
             {
                 using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Port"].ConnectionString))
                 {
-                    /*conn.Open();
                     childDataAdapter.UpdateCommand = new SqlCommand("UPDATE Employees " + "SET EmployeeSalary=@salary, EmployeeBonus=@bonus, EmployeeName=@name" + " WHERE EmployeeID=@id;", conn);
                     childDataAdapter.UpdateCommand.Parameters.Add("@salary", SqlDbType.Float).Value = Convert.ToDouble(textBox1.Text.ToString());
                     childDataAdapter.UpdateCommand.Parameters.Add("@bonus", SqlDbType.Float).Value = Convert.ToDouble(textBox2.Text.ToString());
                     childDataAdapter.UpdateCommand.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
                     childDataAdapter.UpdateCommand.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
+                    
+                    conn.Open();
                     int rows = childDataAdapter.UpdateCommand.ExecuteNonQuery();
                     if (rows > 0)
                     {
                         MessageBox.Show("Updated!");
                     }
-                    childDataAdapter.Fill(ds);
-                    conn.Close();*/
-                    SqlCommand updEmp = new SqlCommand("UPDATE Employees " + "SET EmployeeSalary=@salary, EmployeeBonus=@bonus, EmployeeName=@name" + " WHERE EmployeeID=@id;", conn);
-                    SqlDataAdapter daChild = new SqlDataAdapter(updEmp);
-                    updEmp.Parameters.Add("@salary", SqlDbType.Float).Value = Convert.ToDouble(textBox1.Text.ToString());
-                    updEmp.Parameters.Add("@bonus", SqlDbType.Float).Value = Convert.ToDouble(textBox2.Text.ToString());
-                    updEmp.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
-                    updEmp.Parameters.Add("@id", SqlDbType.Int).Value = dataGridViewChild.CurrentRow.Cells[0].Value;
+                    conn.Close();
+
                     conn.Open();
-                    int rows = updEmp.ExecuteNonQuery();
-                    if (rows > 0)
-                    {
-                        MessageBox.Show("Updated!");
-                    }
+                    childDataAdapter.SelectCommand = new SqlCommand("SELECT * FROM Employees", conn);
+                    ds.Tables["Employees"].Clear();
+                    childDataAdapter.Fill(ds, "Employees");
                     conn.Close();
                 }
 
@@ -137,17 +119,23 @@ namespace lab1_SGBD
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Port"].ConnectionString))
                 {
-                    conn.Open();
                     childDataAdapter.InsertCommand = new SqlCommand("INSERT INTO Employees(EmployeeSalary, EmployeeBonus, EmployeeAge, ManagerID, EmployeeName)" + " VALUES (@salary, @bonus, @age, @mID, @name);", conn);
                     childDataAdapter.InsertCommand.Parameters.Add("@salary", SqlDbType.Float).Value = Convert.ToDouble(textBox1.Text.ToString());
                     childDataAdapter.InsertCommand.Parameters.Add("@bonus", SqlDbType.Float).Value = Convert.ToDouble(textBox2.Text.ToString());
                     childDataAdapter.InsertCommand.Parameters.Add("@age", SqlDbType.Int).Value = Convert.ToInt64(textBox3.Text.ToString());
                     childDataAdapter.InsertCommand.Parameters.Add("@mID", SqlDbType.Int).Value = Convert.ToInt64(textBox4.Text.ToString());
+
                     childDataAdapter.InsertCommand.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
+                    conn.Open();
                     childDataAdapter.InsertCommand.ExecuteNonQuery();
-                    childDataAdapter.Fill(ds);
+                    conn.Close();
+
+                    conn.Open();
+                    childDataAdapter.SelectCommand = new SqlCommand("SELECT * FROM Employees", conn);
+                    ds.Tables["Employees"].Clear();
+                    childDataAdapter.Fill(ds, "Employees");
                     conn.Close();
                 }
             }

@@ -8,13 +8,13 @@ namespace lab1_SGBD
 {
     public partial class parent : Form
     {
-        private readonly string connectionString = @"Server=DESKTOP-ILTATS6\SQLEXPRESS;Database=Port;Integrated Security=true;TrustServerCertificate=true;";
+        string connectionString = @"Server=DESKTOP-ILTATS6\SQLEXPRESS;Database=Port;Integrated Security=true;TrustServerCertificate=true;";
         //private readonly string connectionString = "Data Source=DESKTOP-ILTATS6\\SQLEXPRESS;Initial Catalog=Port;Integrated Security=True;TrustServerCertificate=true;";
-        private DataSet ds = new DataSet();
-        private SqlDataAdapter parentDataAdapter = new SqlDataAdapter();
-        private SqlDataAdapter childDataAdapter = new SqlDataAdapter();
-        private BindingSource parentBindingSource = new BindingSource();
-        private BindingSource childBindingSource = new BindingSource();
+        DataSet ds = new DataSet();
+        SqlDataAdapter parentDataAdapter = new SqlDataAdapter();
+        SqlDataAdapter childDataAdapter = new SqlDataAdapter();
+        BindingSource parentBindingSource = new BindingSource();
+        BindingSource childBindingSource = new BindingSource();
 
 
         public parent()
@@ -58,22 +58,33 @@ namespace lab1_SGBD
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Port"].ConnectionString.ToString()))
                 {
-                    conn.Open();
-                    using(SqlCommand deleteEmp = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn))
+                    /*using(SqlCommand deleteEmp = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn))
                     {
                         deleteEmp.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
                         childDataAdapter.Fill(ds);
                     }
-                    /*childDataAdapter.DeleteCommand = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn);
+                    deleteEmp.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
+                    childDataAdapter.Fill(ds);*/
+
+                    childDataAdapter.DeleteCommand = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn);
                     childDataAdapter.DeleteCommand.Parameters.Add("@id", SqlDbType.Int).Value = ds.Tables["Employees"].Rows[childBindingSource.Position][0];
                     conn.Open();
                     childDataAdapter.DeleteCommand.ExecuteNonQuery();
-                    childDataAdapter.Fill(ds);*/
                     conn.Close();
-                }
+                    childDataAdapter.Fill(ds, "Employees");
 
+                    /*SqlCommand delEmp = new SqlCommand("DELETE FROM Employees " + "WHERE EmployeeID = @id;", conn);
+                    SqlDataAdapter daChild = new SqlDataAdapter(delEmp);
+                    delEmp.Parameters.Add("@id", SqlDbType.Int).Value = dataGridViewChild.CurrentRow.Cells[0].Value;
+                    DataSet ds1 = new DataSet();
+                    conn.Open();
+                    delEmp.ExecuteNonQuery();
+                    conn.Close();
+                    ds1.Clear();
+                    daChild.Fill(ds1, "Employees");*/
+                }
             }
             catch (Exception ex)
             {
@@ -85,9 +96,9 @@ namespace lab1_SGBD
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection conn = new SqlConnection(ConfigurationManager.ConnectionStrings["Port"].ConnectionString))
                 {
-                    conn.Open();
+                    /*conn.Open();
                     childDataAdapter.UpdateCommand = new SqlCommand("UPDATE Employees " + "SET EmployeeSalary=@salary, EmployeeBonus=@bonus, EmployeeName=@name" + " WHERE EmployeeID=@id;", conn);
                     childDataAdapter.UpdateCommand.Parameters.Add("@salary", SqlDbType.Float).Value = Convert.ToDouble(textBox1.Text.ToString());
                     childDataAdapter.UpdateCommand.Parameters.Add("@bonus", SqlDbType.Float).Value = Convert.ToDouble(textBox2.Text.ToString());
@@ -99,6 +110,19 @@ namespace lab1_SGBD
                         MessageBox.Show("Updated!");
                     }
                     childDataAdapter.Fill(ds);
+                    conn.Close();*/
+                    SqlCommand updEmp = new SqlCommand("UPDATE Employees " + "SET EmployeeSalary=@salary, EmployeeBonus=@bonus, EmployeeName=@name" + " WHERE EmployeeID=@id;", conn);
+                    SqlDataAdapter daChild = new SqlDataAdapter(updEmp);
+                    updEmp.Parameters.Add("@salary", SqlDbType.Float).Value = Convert.ToDouble(textBox1.Text.ToString());
+                    updEmp.Parameters.Add("@bonus", SqlDbType.Float).Value = Convert.ToDouble(textBox2.Text.ToString());
+                    updEmp.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
+                    updEmp.Parameters.Add("@id", SqlDbType.Int).Value = dataGridViewChild.CurrentRow.Cells[0].Value;
+                    conn.Open();
+                    int rows = updEmp.ExecuteNonQuery();
+                    if (rows > 0)
+                    {
+                        MessageBox.Show("Updated!");
+                    }
                     conn.Close();
                 }
 
@@ -126,6 +150,27 @@ namespace lab1_SGBD
                     childDataAdapter.Fill(ds);
                     conn.Close();
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    //parentDataAdapter.SelectCommand = new SqlCommand("SELECT * FROM " + "Managers;", conn);
+                    childDataAdapter.SelectCommand = new SqlCommand("SELECT * FROM " + "Employees", conn);
+                    //parentDataAdapter.Fill(ds, "Managers");
+                    ds.Clear();
+                    childDataAdapter.Fill(ds, "Employees");
+                }
+
             }
             catch (Exception ex)
             {

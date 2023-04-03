@@ -138,6 +138,7 @@ namespace lab1_SGBD
                     childDataAdapter.InsertCommand.Parameters.Add("@age", SqlDbType.Int).Value = Convert.ToInt64(textBox3.Text.ToString());
                     childDataAdapter.InsertCommand.Parameters.Add("@mID", SqlDbType.Int).Value = Convert.ToInt64(textBox4.Text.ToString());
                     childDataAdapter.InsertCommand.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
+
                     conn.Open();
                     childDataAdapter.InsertCommand.ExecuteNonQuery();
                     conn.Close();

@@ -53,7 +53,9 @@
             // 
             this.dataGridViewParent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewParent.Location = new System.Drawing.Point(28, 48);
+            this.dataGridViewParent.MultiSelect = false;
             this.dataGridViewParent.Name = "dataGridViewParent";
+            this.dataGridViewParent.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewParent.Size = new System.Drawing.Size(646, 544);
             this.dataGridViewParent.TabIndex = 0;
             // 
@@ -61,7 +63,9 @@
             // 
             this.dataGridViewChild.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridViewChild.Location = new System.Drawing.Point(862, 48);
+            this.dataGridViewChild.MultiSelect = false;
             this.dataGridViewChild.Name = "dataGridViewChild";
+            this.dataGridViewChild.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridViewChild.Size = new System.Drawing.Size(656, 544);
             this.dataGridViewChild.TabIndex = 1;
             // 
@@ -198,7 +202,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.ClientSize = new System.Drawing.Size(1951, 739);
+            this.ClientSize = new System.Drawing.Size(1924, 739);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);

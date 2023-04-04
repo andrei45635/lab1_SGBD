@@ -102,20 +102,31 @@ namespace lab1_SGBD
                     childDataAdapter.UpdateCommand.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
                     childDataAdapter.UpdateCommand.Parameters.Add("@id", SqlDbType.Int).Value = dataGridViewChild.Rows[dataGridViewChild.SelectedRows[0].Index].Cells["EmployeeID"].Value.ToString();
 
-                    conn.Open();
-                    
-                    int rows = childDataAdapter.UpdateCommand.ExecuteNonQuery();
-                    if (rows > 0)
-                    {
-                        MessageBox.Show("Updated!");
-                    }
-                    conn.Close();
+                    string err = "";
 
-                    conn.Open();
-                    childDataAdapter.SelectCommand = new SqlCommand(selectEmpQuery, conn);
-                    ds.Tables["Employees"].Clear();
-                    childDataAdapter.Fill(ds, "Employees");
-                    conn.Close();
+                    if (Convert.ToDouble(textBox1.Text.ToString()) < 1200 || Convert.ToDouble(textBox1.Text.ToString()) > 1500) err += "Salary must be between 1200 and 1500!\n";
+                    if (Convert.ToDouble(textBox2.Text.ToString()) < 100 || Convert.ToDouble(textBox2.Text.ToString()) > 400) err += "Bonus must be between 100 and 400!\n";
+                    if (String.IsNullOrWhiteSpace(textBox5.Text.ToString())) err += "Name can't be null or whitespace!\n";
+
+                    if(err.Length > 0)
+                    {
+                        MessageBox.Show(err);
+                    } else
+                    {
+                        conn.Open();
+                        int rows = childDataAdapter.UpdateCommand.ExecuteNonQuery();
+                        if (rows > 0)
+                        {
+                            MessageBox.Show("Updated!");
+                        }
+                        conn.Close();
+
+                        conn.Open();
+                        childDataAdapter.SelectCommand = new SqlCommand(selectEmpQuery, conn);
+                        ds.Tables["Employees"].Clear();
+                        childDataAdapter.Fill(ds, "Employees");
+                        conn.Close();
+                    }
                 }
 
             }
@@ -139,15 +150,29 @@ namespace lab1_SGBD
                     childDataAdapter.InsertCommand.Parameters.Add("@mID", SqlDbType.Int).Value = Convert.ToInt64(textBox4.Text.ToString());
                     childDataAdapter.InsertCommand.Parameters.Add("@name", SqlDbType.VarChar).Value = textBox5.Text;
 
-                    conn.Open();
-                    childDataAdapter.InsertCommand.ExecuteNonQuery();
-                    conn.Close();
+                    string err = "";
 
-                    conn.Open();
-                    childDataAdapter.SelectCommand = new SqlCommand(selectEmpQuery, conn);
-                    ds.Tables["Employees"].Clear();
-                    childDataAdapter.Fill(ds, "Employees");
-                    conn.Close();
+                    if (Convert.ToDouble(textBox1.Text.ToString()) < 1200 || Convert.ToDouble(textBox1.Text.ToString()) > 1500) err += "Salary must be between 1200 and 1500!\n";
+                    if (Convert.ToDouble(textBox2.Text.ToString()) < 100 || Convert.ToDouble(textBox2.Text.ToString()) > 400) err += "Bonus must be between 100 and 400!\n";
+                    if (Convert.ToInt64(textBox3.Text.ToString()) < 13 || Convert.ToInt64(textBox3.Text.ToString()) > 75) err += "The employee can't be underage!\n";
+                    if (Convert.ToInt64(textBox4.Text.ToString()) < 0) err += "Invalid manager!\n";
+                    if (String.IsNullOrWhiteSpace(textBox5.Text.ToString())) err += "Name can't be null or whitespace!\n";
+
+                    if(err.Length > 0)
+                    {
+                        MessageBox.Show(err);
+                    } else
+                    {
+                        conn.Open();
+                        childDataAdapter.InsertCommand.ExecuteNonQuery();
+                        conn.Close();
+
+                        conn.Open();
+                        childDataAdapter.SelectCommand = new SqlCommand(selectEmpQuery, conn);
+                        ds.Tables["Employees"].Clear();
+                        childDataAdapter.Fill(ds, "Employees");
+                        conn.Close();
+                    }
                 }
             }
             catch (Exception ex)
